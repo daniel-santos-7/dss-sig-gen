@@ -2,7 +2,7 @@
 
 import math as m
 
-N = 8
+N = 7
 R = 12
 
 k = m.pi/2**(N+1)
