@@ -2,6 +2,7 @@ GHDL = ghdl
 GHDL_OPTS = --workdir=$(WORKDIR)
 GHDL_RUNOPTS = --wave=$(WAVESDIR)/$(TBS_TOP).ghw
 
+STEPSDIR = steps
 WORKDIR  = work
 WAVESDIR = waves
 
@@ -11,20 +12,24 @@ TBS_SRC  = $(wildcard ./tbs/*.vhd)
 RTL_TOP = sig_gen
 TBS_TOP = sig_gen_tb
 
-$(WORKDIR) $(WAVESDIR):
-	mkdir $@
+.PHONY: all run clean
 
-.PHONY: analyze elaborate run clean
+all: run
 
-analyze: $(WORKDIR)
-	$(GHDL) analyze $(GHDL_OPTS) $(RTL_SRC) $(TBS_SRC)
+run: $(STEPSDIR)/run
 
-elaborate: analyze
-	$(GHDL) elaborate $(GHDL_OPTS) $(TBS_TOP)
+clean: | $(WORKDIR)
+	@$(GHDL) clean $(GHDL_OPTS)
+	@rm -rf $(STEPSDIR) $(WORKDIR) $(WAVESDIR)
 
-run: elaborate $(WAVESDIR)
-	$(GHDL) run  $(TBS_TOP) $(GHDL_RUNOPTS)
+$(STEPSDIR) $(WORKDIR) $(WAVESDIR):
+	@mkdir $@
 
-clean:
-	$(GHDL) clean $(GHDL_OPTS)
-	rm -rf $(WORKDIR) $(WAVESDIR)
+$(STEPSDIR)/import: $(RTL_SRC) $(TBS_SRC) | $(STEPSDIR) $(WORKDIR) 
+	@$(GHDL) import $(GHDL_OPTS) $(RTL_SRC) $(TBS_SRC) | tee $@
+
+$(STEPSDIR)/make: $(STEPSDIR)/import
+	@$(GHDL) make $(GHDL_OPTS) $(TBS_TOP) | tee $@
+
+$(STEPSDIR)/run: $(STEPSDIR)/make | $(WAVESDIR)
+	@$(GHDL) run  $(TBS_TOP) $(GHDL_RUNOPTS) | tee $@
