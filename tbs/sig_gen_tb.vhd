@@ -1,29 +1,17 @@
 library IEEE;
+library work;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
+use work.sig_gen_pkg.all;
+use work.sine_lut_pkg.OUT_RES_BITS;
 
 entity sig_gen_tb is
     generic (
-        PHA_ACC_BITS : natural := 32;
-        OUT_RES_BITS : natural := 12
+        PHA_ACC_BITS : natural := 32
     );
 end sig_gen_tb;
 
 architecture tb of sig_gen_tb is
-
-    -- Component declaration
-    component sig_gen is
-        generic (
-            PHA_ACC_BITS : natural := 32;
-            OUT_RES_BITS : natural := 12
-        );
-        port (
-            rst_n   : in  std_logic;
-            clk     : in  std_logic;
-            pha_inc : in  std_logic_vector(PHA_ACC_BITS-1 downto 0);
-            dds_out : out std_logic_vector(OUT_RES_BITS-1 downto 0)
-        );
-    end component sig_gen;
 
     -- Testbench signals
     signal rst_n   : std_logic := '0';
@@ -41,8 +29,7 @@ begin
     -- Instantiate the unit under test
     uut : sig_gen
         generic map (
-            PHA_ACC_BITS => PHA_ACC_BITS,
-            OUT_RES_BITS => OUT_RES_BITS
+            PHA_ACC_BITS => PHA_ACC_BITS
         )
         port map (
             rst_n   => rst_n,
