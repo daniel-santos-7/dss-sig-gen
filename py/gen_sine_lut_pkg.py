@@ -11,16 +11,17 @@ def gen_sine_values(samples: int, amplitude: int, initial_phase: int, final_phas
     phi = initial_phase / 180 * math.pi
     return [amplitude * math.sin(omega*n + phi) for n in range(0, samples)]
 
-# Convert a integer to a hex string
-def int_to_hex_str(integer: int, bits: int) -> str:
+# Convert a integer to VHDL hex string
+def int_to_vhdl_hex_str(integer: int, bits: int) -> str:
     value = (2 ** bits + integer) if integer < 0 else integer
     hex_digits = math.ceil(bits / 4)
     return f'x"{value:0{hex_digits}x}"'
 
 # Generate a VHDL list
 def gen_vhdl_sine_lut(sine_values: List[float], bits: int) -> str:
-    lut = [int_to_hex_str(integer, bits) for integer in map(int, sine_values)]
-    return ',\n\t\t'.join(lut)
+    values = [int_to_vhdl_hex_str(integer, bits) for integer in map(int, sine_values)]
+    lut = ',\n\t\t'.join(values)
+    return f'(\n\t\t{lut}\n\t)'
 
 PACKAGE_TEMPLATE = '''library IEEE;
 use IEEE.std_logic_1164.all;
@@ -33,9 +34,7 @@ package sine_lut_pkg is
 
     type sine_lut_array is array (0 to 2 ** LUT_ADDR_BITS-1) of std_logic_vector(OUT_RES_BITS-1 downto 0);
 
-    constant SINE_TABLE : sine_lut_array := (
-        {lut_values}
-    );
+    constant SINE_TABLE : sine_lut_array := {lut_values};
 
 end package sine_lut_pkg;'''
 
@@ -66,6 +65,7 @@ if __name__ == '__main__':
     # Maximum / minimum value
     amplitude = 2 ** (out_res_bits - 1) - 1
 
+    # Sine values
     sine_values = gen_sine_values(samples, amplitude, initial_phase, final_phase)
 
     lut_values = gen_vhdl_sine_lut(sine_values, out_res_bits);

@@ -10,7 +10,7 @@ package sine_lut_pkg is
     type sine_lut_array is array (0 to 2 ** LUT_ADDR_BITS-1) of std_logic_vector(OUT_RES_BITS-1 downto 0);
 
     constant SINE_TABLE : sine_lut_array := (
-        x"801",
+		x"801",
 		x"802",
 		x"802",
 		x"803",
@@ -266,6 +266,6 @@ package sine_lut_pkg is
 		x"7fd",
 		x"7fe",
 		x"7fe"
-    );
+	);
 
 end package sine_lut_pkg;
