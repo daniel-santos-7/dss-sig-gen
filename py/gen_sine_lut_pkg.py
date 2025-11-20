@@ -1,21 +1,43 @@
 #!/usr/bin/python3
 
+from typing import List
 import math
 import sys
 
 # Generate sine values
-def gen_sine_values(samples: int, amplitude: int, initial_phase: int, final_phase: int):
+def gen_sine_values(samples: int, amplitude: int, initial_phase: int, final_phase: int) -> List[float]:
     delta = (final_phase - initial_phase) / 180 * math.pi
     omega = delta / samples
     phi = initial_phase / 180 * math.pi
-    values = [amplitude * math.sin(omega*n + phi) for n in range(0, samples)]
-    return values
+    return [amplitude * math.sin(omega*n + phi) for n in range(0, samples)]
 
-# 
-def int_to_hex_str(integer: int, bits: int = 12) -> str:
+# Convert a integer to a hex string
+def int_to_hex_str(integer: int, bits: int) -> str:
     value = (2 ** bits + integer) if integer < 0 else integer
     hex_digits = math.ceil(bits / 4)
     return f'x"{value:0{hex_digits}x}"'
+
+# Generate a VHDL list
+def gen_vhdl_sine_lut(sine_values: List[float], bits: int) -> str:
+    lut = [int_to_hex_str(integer, bits) for integer in map(int, sine_values)]
+    return ',\n\t\t'.join(lut)
+
+PACKAGE_TEMPLATE = '''library IEEE;
+use IEEE.std_logic_1164.all;
+
+package sine_lut_pkg is
+    
+    constant LUT_ADDR_BITS : natural := {lut_addr_bits};
+
+    constant OUT_RES_BITS  : natural := {out_res_bits};
+
+    type sine_lut_array is array (0 to 2 ** LUT_ADDR_BITS-1) of std_logic_vector(OUT_RES_BITS-1 downto 0);
+
+    constant SINE_TABLE : sine_lut_array := (
+        {lut_values}
+    );
+
+end package sine_lut_pkg;'''
 
 if __name__ == '__main__':
 
@@ -46,25 +68,8 @@ if __name__ == '__main__':
 
     sine_values = gen_sine_values(samples, amplitude, initial_phase, final_phase)
 
-    lut = [int_to_hex_str(int(value), out_res_bits) for value in sine_values]
+    lut_values = gen_vhdl_sine_lut(sine_values, out_res_bits);
 
-    lut_values = ',\n\t\t'.join(lut)
-
-    template = f'''library IEEE;
-use IEEE.std_logic_1164.all;
-
-package sine_lut_pkg is
+    package = PACKAGE_TEMPLATE.format(lut_addr_bits=lut_addr_bits, out_res_bits=out_res_bits, lut_values=lut_values)
     
-    constant LUT_ADDR_BITS : natural := {lut_addr_bits};
-
-    constant OUT_RES_BITS  : natural := {out_res_bits};
-
-    type sine_lut_array is array (0 to 2 ** LUT_ADDR_BITS-1) of std_logic_vector(OUT_RES_BITS-1 downto 0);
-
-    constant SINE_TABLE : sine_lut_array := (
-        {lut_values}
-    );
-
-end package sine_lut_pkg;'''
-    
-    print(template)
+    print(package)
