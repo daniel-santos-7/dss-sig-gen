@@ -1,34 +1,44 @@
 #!/usr/bin/python3
 
 import math
+import sys
 
-# LUT address bits
-lut_addr_bits = 8
+if __name__ == '__main__':
 
-# Output resolution bits
-out_res_bits = 12
+    argv_len = len(sys.argv)
 
-# Period
-period = math.pi
+    if argv_len == 1:
+        print(f'Use: {sys.argv[0]} <lut-addr-bits> <out-res-bits>')
+        print('default values: lut-addr-bits=8 out-res-bits=12')
+        exit(1)
 
-# Samples quantity
-samples = 2 ** lut_addr_bits
+    # LUT address bits
+    lut_addr_bits = int(sys.argv[1]) if argv_len > 1 else 8
 
-k = period / samples
+    # Output resolution bits
+    out_res_bits = int(sys.argv[2]) if argv_len > 2 else 12
 
-s = [math.sin(k*n-math.pi/2) for n in range(0, samples)]
+    # Period
+    period = math.pi
 
-amplitude = 2 ** (out_res_bits - 1) - 1
+    # Samples quantity
+    samples = 2 ** lut_addr_bits
 
-y = [amplitude * (x + 1) for x in s]
+    k = period / samples
 
-hex_digits = math.ceil(out_res_bits / 4)
+    s = [math.sin(k*n-math.pi/2) for n in range(0, samples)]
 
-lut = [f'x"{int(v):0{hex_digits}x}"' for v in y]
+    amplitude = 2 ** (out_res_bits - 1) - 1
 
-lut_values = ',\n\t\t'.join(lut)
+    y = [amplitude * (x + 1) for x in s]
 
-template = f'''
+    hex_digits = math.ceil(out_res_bits / 4)
+
+    lut = [f'x"{int(v):0{hex_digits}x}"' for v in y]
+
+    lut_values = ',\n\t\t'.join(lut)
+
+    template = f'''
 library IEEE;
 use IEEE.std_logic_1164.all;
 
@@ -45,6 +55,5 @@ package sine_lut_pkg is
     );
 
 end package sine_lut_pkg;
-'''
-
-print(template)
+    '''
+    print(template)
