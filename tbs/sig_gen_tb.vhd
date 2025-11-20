@@ -56,20 +56,19 @@ begin
         -- Initialize reset
         rst_n <= '0';
         pha_inc <= (others => '0');
-        -- wait for 20 ns;
-        wait until rising_edge(clk);
 
         -- Release reset
-        rst_n <= '1';
         wait until rising_edge(clk);
+        rst_n <= '1';
 
         -- Set phase increment (example: 1/256 of full range for slow frequency)
+        wait until rising_edge(clk);
         pha_inc <= std_logic_vector(to_unsigned(16777216, 32)); -- 2^24
+
+        -- End simulation
         for i in 0 to 1000 loop
             wait until rising_edge(clk);
         end loop;
-
-        -- End simulation
         clk_en <= false;
         wait;
     end process;
