@@ -38,8 +38,7 @@ if __name__ == '__main__':
 
     lut_values = ',\n\t\t'.join(lut)
 
-    template = f'''
-library IEEE;
+    template = f'''library IEEE;
 use IEEE.std_logic_1164.all;
 
 package sine_lut_pkg is
@@ -54,6 +53,6 @@ package sine_lut_pkg is
         {lut_values}
     );
 
-end package sine_lut_pkg;
-    '''
+end package sine_lut_pkg;'''
+    
     print(template)
