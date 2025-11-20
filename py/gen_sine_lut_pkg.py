@@ -26,7 +26,7 @@ hex_digits = math.ceil(out_res_bits / 4)
 
 lut = [f'x"{int(v):0{hex_digits}x}"' for v in y]
 
-lut_values = ',\n\t'.join(lut)
+lut_values = ',\n\t\t'.join(lut)
 
 template = f'''
 library IEEE;
@@ -41,7 +41,7 @@ package sine_lut_pkg is
     type sine_lut_array is array (0 to 2 ** LUT_ADDR_BITS-1) of std_logic_vector(OUT_RES_BITS-1 downto 0);
 
     constant SINE_TABLE : sine_lut_array := (
-    {lut_values}
+        {lut_values}
     );
 
 end package sine_lut_pkg;
