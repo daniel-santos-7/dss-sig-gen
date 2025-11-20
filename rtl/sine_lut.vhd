@@ -8,20 +8,20 @@ entity sine_lut is
     port (
         rst_n : in  std_logic;
         clk   : in  std_logic;
-        addr  : in  std_logic_vector(LUT_ADDR_BITS-1 downto 0);
+        addr  : in  std_logic_vector(LUT_ADDR_BITS downto 0);
         wave  : out std_logic_vector(OUT_RES_BITS-1 downto 0)
     );
 end entity sine_lut;
 
 architecture rtl of sine_lut is
 
-    signal pointer : std_logic_vector(LUT_ADDR_BITS-2 downto 0);
+    signal pointer : std_logic_vector(LUT_ADDR_BITS-1 downto 0);
 
     signal wave_reg : std_logic_vector(OUT_RES_BITS-1 downto 0);
 
 begin
 
-    pointer <= not addr(LUT_ADDR_BITS-2 downto 0) when addr(LUT_ADDR_BITS-1) = '1' else addr(LUT_ADDR_BITS-2 downto 0);
+    pointer <= not addr(LUT_ADDR_BITS-1 downto 0) when addr(LUT_ADDR_BITS) = '1' else addr(LUT_ADDR_BITS-1 downto 0);
 
     wave_reg_logic : process(rst_n, clk)
     begin
