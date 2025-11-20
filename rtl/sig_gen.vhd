@@ -21,7 +21,7 @@ architecture rtl of sig_gen is
 
     signal pha_val : std_logic_vector(PHA_ACC_BITS-1 downto 0);
 
-    signal addr : std_logic_vector(LUT_ADDR_BITS downto 0);
+    signal addr : std_logic_vector(LUT_ADDR_BITS+1 downto 0);
 
 begin
 
@@ -34,7 +34,7 @@ begin
         pha_val => pha_val
     );
 
-    addr <= pha_val(PHA_ACC_BITS-1 downto PHA_ACC_BITS-LUT_ADDR_BITS-1);
+    addr <= pha_val(PHA_ACC_BITS-1 downto PHA_ACC_BITS-LUT_ADDR_BITS-2);
 
     u_sine_lut : sine_lut port map (
         rst_n  => rst_n,
