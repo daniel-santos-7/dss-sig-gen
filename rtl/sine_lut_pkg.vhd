@@ -1,4 +1,3 @@
-
 library IEEE;
 use IEEE.std_logic_1164.all;
 
@@ -270,4 +269,3 @@ package sine_lut_pkg is
     );
 
 end package sine_lut_pkg;
-    
