@@ -3,6 +3,7 @@ library work;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 use work.sig_gen_pkg.all;
+use work.sine_lut_pkg.LUT_ADDR_BITS;
 use work.sine_lut_pkg.OUT_RES_BITS;
 
 entity sig_gen_tb is
@@ -61,14 +62,17 @@ begin
         wait until rising_edge(clk);
         rst_n <= '1';
 
-        -- Set phase increment (example: 1/256 of full range for slow frequency)
-        wait until rising_edge(clk);
-        pha_inc <= std_logic_vector(to_unsigned(16777216, 32)); -- 2^24
-
-        -- End simulation
-        for i in 0 to 1000 loop
+        for i in LUT_ADDR_BITS to PHA_ACC_BITS-1 loop
             wait until rising_edge(clk);
+            pha_inc <= std_logic_vector(shift_left(to_unsigned(1, PHA_ACC_BITS), i));
+            for j in 0 to 2**(PHA_ACC_BITS-i)-1 loop
+                wait until rising_edge(clk);
+            end loop;
         end loop;
+        
+        -- End simulation
+        wait until rising_edge(clk);
+        pha_inc <= (others => '0');
         clk_en <= false;
         wait;
     end process;
