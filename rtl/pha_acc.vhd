@@ -22,12 +22,10 @@ begin
 
     pha_reg_logic : process(clk, rst_n)
     begin
-        if rising_edge(clk) then
-            if rst_n = '0' then
-                pha_reg <= (others => '0');
-            else
-                pha_reg <= std_logic_vector(unsigned(pha_reg) + unsigned(pha_inc));
-            end if ;
+        if rst_n = '0' then
+            pha_reg <= (others => '0');
+        elsif rising_edge(clk) then
+            pha_reg <= std_logic_vector(unsigned(pha_reg) + unsigned(pha_inc));
         end if ;
     end process pha_reg_logic; -- pha_reg_logic
 
