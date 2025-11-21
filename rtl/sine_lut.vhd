@@ -29,18 +29,16 @@ begin
 
     wave_reg_logic : process(rst_n, clk)
     begin
-        if rising_edge(clk) then
-            if rst_n = '0' then
-                wave_reg <= (others => '0');
+        if rst_n = '0' then
+            wave_reg <= (others => '0');
+        elsif rising_edge(clk) then
+            if addr(LUT_ADDR_BITS + 1) = '1' then
+                wave_reg <= std_logic_vector(unsigned(not sine_val) + 1);
             else
-                if addr(LUT_ADDR_BITS + 1) = '1' then
-                    wave_reg <= std_logic_vector(unsigned(not sine_val) + 1);
-                else
-                    wave_reg <= sine_val;
-                end if;
-            end if ;
+                wave_reg <= sine_val;
+            end if;
         end if ;
-    end process ; -- wave_reg_logic
+    end process wave_reg_logic; -- wave_reg_logic
 
     -- Assign register to output
     wave <= wave_reg;
